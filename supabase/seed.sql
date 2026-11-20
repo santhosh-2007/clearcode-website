@@ -24,7 +24,7 @@ values
   'Full-featured digital storefronts with secure payment gateways, inventory management, and smooth checkout experiences.',
   'Transform your retail business into a 24/7 revenue engine. We build e-commerce solutions that handle product catalogs, cart logic, multi-tier pricing, coupon systems, and instant payments through Stripe, Razorpay, or PayPal.',
   array['Custom Product Showcase & Filters', 'Secure Multi-Payment Gateways', 'Order & Inventory Tracking', 'Customer Account Dashboards', 'Abandoned Cart Recovery Logic', 'Automated Email Invoicing'],
-  'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=800&q=80',
   true,
   2
 ),
