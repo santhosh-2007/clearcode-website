@@ -30,7 +30,7 @@ export const AdminLogin: React.FC = () => {
   };
 
   const handleUseDemoCreds = () => {
-    setEmail('admin@clearcode.dev');
+    setEmail('clearcode.dev16@gmail.com');
     setPassword('clearcode2026');
   };
 
@@ -81,7 +81,7 @@ export const AdminLogin: React.FC = () => {
                 onClick={handleUseDemoCreds}
                 className="text-xs font-semibold underline text-white hover:text-brand-cyan cursor-pointer"
               >
-                Auto-fill Demo Admin (admin@clearcode.dev / clearcode2026)
+                Auto-fill Demo Admin (clearcode.dev16@gmail.com / clearcode2026)
               </button>
             </div>
           )}

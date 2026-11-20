@@ -218,7 +218,7 @@ const DEFAULT_SETTINGS: SiteSettingsGeneral = {
   tagline: 'Code It. Build It. Launch It.',
   brand_heading: 'Ideas Deserve Better Websites. Let\'s Build Yours.',
   brand_positioning: 'Modern Web Development Studio',
-  contact_email: 'contact@clearcode.dev',
+  contact_email: 'clearcode.dev16@gmail.com',
   whatsapp_number: '919876543210',
   location: 'Global Remote Studio',
   announcement_banner: {

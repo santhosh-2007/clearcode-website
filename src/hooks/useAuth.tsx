@@ -18,7 +18,7 @@ const LOCAL_ADMIN_PROFILE: AdminProfile = {
   id: 'admin-local-01',
   auth_user_id: 'local-mock-user',
   full_name: 'ClearCode Administrator',
-  email: 'admin@clearcode.dev',
+  email: 'clearcode.dev16@gmail.com',
   role: 'admin',
   created_at: new Date().toISOString(),
 };
@@ -104,15 +104,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const client = supabase;
       if (!isSupabaseConfigured || !client) {
         // Mock authentication check for demo evaluation
-        if (email.toLowerCase().trim() === 'admin@clearcode.dev' && password === 'clearcode2026') {
+        const cleanEmail = email.toLowerCase().trim();
+        if ((cleanEmail === 'clearcode.dev16@gmail.com' || cleanEmail === 'admin@clearcode.dev') && password === 'clearcode2026') {
           localStorage.setItem('cc_mock_admin_session', 'true');
-          setUser({ id: 'local-mock-user', email: 'admin@clearcode.dev' });
+          setUser({ id: 'local-mock-user', email: 'clearcode.dev16@gmail.com' });
           setAdminProfile(LOCAL_ADMIN_PROFILE);
           return { success: true };
         } else {
           return { 
             success: false, 
-            error: 'Invalid credentials. Demo admin: admin@clearcode.dev / clearcode2026' 
+            error: 'Invalid credentials. Demo admin: clearcode.dev16@gmail.com / clearcode2026' 
           };
         }
       }
