@@ -30,7 +30,7 @@ export const PrivacyPolicy: React.FC = () => {
     },
     {
       title: '5. Contact Details for Privacy Inquiries',
-      content: 'If you have questions about your personal data, wish to request removal of your enquiry record, or need privacy clarifications, please contact us directly at contact@clearcode.dev.'
+      content: 'If you have questions about your personal data, wish to request removal of your enquiry record, or need privacy clarifications, please contact us directly at clearcode.dev16@gmail.com.'
     }
   ];
 

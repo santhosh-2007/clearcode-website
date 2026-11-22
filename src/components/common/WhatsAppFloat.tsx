@@ -3,7 +3,7 @@ import { MessageSquare } from 'lucide-react';
 import { dataService } from '@/services/dataService';
 
 export const WhatsAppFloat: React.FC = () => {
-  const [phone, setPhone] = useState<string>('919876543210');
+  const [phone, setPhone] = useState<string>('918110853519');
 
   useEffect(() => {
     dataService.getSettings().then((settings) => {

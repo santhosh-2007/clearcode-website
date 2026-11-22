@@ -11,7 +11,7 @@ export const Footer: React.FC = () => {
     dataService.getSettings().then(setSettings);
   }, []);
 
-  const phone = settings?.whatsapp_number?.replace(/\D/g, '') || '919876543210';
+  const phone = settings?.whatsapp_number?.replace(/\D/g, '') || '918110853519';
   const email = settings?.contact_email || 'clearcode.dev16@gmail.com';
   const footerDescription = settings?.footer_description || 'Modern Web Development Studio. We engineer lightning-fast, high-converting websites and scalable web applications for startups, businesses, and ambitious creators.';
   const footerCopyright = settings?.footer_copyright || 'ClearCode.dev. Code It. Build It. Launch It. All rights reserved.';
@@ -38,7 +38,7 @@ export const Footer: React.FC = () => {
             </p>
             <div className="pt-2 flex items-center gap-3">
               <a
-                href={settings?.social_links?.github || 'https://github.com/clearcode-dev'}
+                href={settings?.social_links?.github || 'https://github.com/santhosh-2007'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-lg bg-surface border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
@@ -47,7 +47,7 @@ export const Footer: React.FC = () => {
                 <Github className="w-4 h-4" />
               </a>
               <a
-                href={settings?.social_links?.linkedin || 'https://linkedin.com/company/clearcode-dev'}
+                href={settings?.social_links?.linkedin || 'https://www.linkedin.com/in/santhosh-s-90581a334/'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-lg bg-surface border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
@@ -64,15 +64,17 @@ export const Footer: React.FC = () => {
               >
                 <Instagram className="w-4 h-4" />
               </a>
-              <a
-                href={settings?.social_links?.twitter || 'https://twitter.com/clearcodedev'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-surface border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
-                aria-label="Twitter / X"
-              >
-                <Twitter className="w-4 h-4" />
-              </a>
+              {settings?.social_links?.twitter ? (
+                <a
+                  href={settings.social_links.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg bg-surface border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
+                  aria-label="Twitter / X"
+                >
+                  <Twitter className="w-4 h-4" />
+                </a>
+              ) : null}
             </div>
           </div>
 

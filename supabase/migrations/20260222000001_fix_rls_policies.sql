@@ -99,17 +99,17 @@ values (
     'footer_description', 'Modern Web Development Studio. We engineer lightning-fast, high-converting websites and scalable web applications for startups, businesses, and ambitious creators.',
     'footer_copyright', 'ClearCode.dev. Code It. Build It. Launch It. All rights reserved.',
     'contact_email', 'clearcode.dev16@gmail.com',
-    'whatsapp_number', '919876543210',
+    'whatsapp_number', '+918110853519',
     'location', 'Global Remote Studio',
     'announcement_banner', jsonb_build_object(
       'enabled', true,
       'text', '🚀 Now taking new client projects for Q1/Q2. Free initial consultation included!'
     ),
     'social_links', jsonb_build_object(
-      'github', 'https://github.com/clearcode-dev',
-      'linkedin', 'https://linkedin.com/company/clearcode-dev',
+      'github', 'https://github.com/santhosh-2007',
+      'linkedin', 'https://www.linkedin.com/in/santhosh-s-90581a334/',
       'instagram', 'https://instagram.com/clearcode.dev',
-      'twitter', 'https://twitter.com/clearcodedev'
+      'twitter', ''
     )
   ),
   now()

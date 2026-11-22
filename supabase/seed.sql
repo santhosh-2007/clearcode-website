@@ -210,17 +210,17 @@ values
     "brand_heading": "Ideas Deserve Better Websites. Let''s Build Yours.",
     "brand_positioning": "Modern Web Development Studio",
     "contact_email": "clearcode.dev16@gmail.com",
-    "whatsapp_number": "919876543210",
+    "whatsapp_number": "+918110853519",
     "location": "Global Remote Studio",
     "announcement_banner": {
       "enabled": true,
       "text": "🚀 Now taking new client projects for Q1/Q2. Free initial consultation included!"
     },
     "social_links": {
-      "github": "https://github.com/clearcode-dev",
-      "linkedin": "https://linkedin.com/company/clearcode-dev",
+      "github": "https://github.com/santhosh-2007",
+      "linkedin": "https://www.linkedin.com/in/santhosh-s-90581a334/",
       "instagram": "https://instagram.com/clearcode.dev",
-      "twitter": "https://twitter.com/clearcodedev"
+      "twitter": ""
     }
   }'::jsonb
 ),

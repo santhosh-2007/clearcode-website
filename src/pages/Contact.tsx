@@ -18,8 +18,8 @@ export const Contact: React.FC = () => {
     dataService.getSettings().then(setSettings);
   }, []);
 
-  const phone = settings?.whatsapp_number?.replace(/\D/g, '') || '919876543210';
-  const businessEmail = settings?.contact_email || 'contact@clearcode.dev';
+  const phone = settings?.whatsapp_number?.replace(/\D/g, '') || '918110853519';
+  const businessEmail = settings?.contact_email || 'clearcode.dev16@gmail.com';
   const location = settings?.location || 'Global Remote Studio';
 
   const handleQuickContact = (e: React.FormEvent) => {
@@ -122,7 +122,7 @@ export const Contact: React.FC = () => {
                   </span>
                   <div className="flex items-center gap-3">
                     <a
-                      href={settings?.social_links?.github || 'https://github.com/clearcode-dev'}
+                      href={settings?.social_links?.github || 'https://github.com/santhosh-2007'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-lg bg-surface-cardHover border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
@@ -131,7 +131,7 @@ export const Contact: React.FC = () => {
                       <Github className="w-4 h-4" />
                     </a>
                     <a
-                      href={settings?.social_links?.linkedin || 'https://linkedin.com/company/clearcode-dev'}
+                      href={settings?.social_links?.linkedin || 'https://www.linkedin.com/in/santhosh-s-90581a334/'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-lg bg-surface-cardHover border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
@@ -148,15 +148,17 @@ export const Contact: React.FC = () => {
                     >
                       <Instagram className="w-4 h-4" />
                     </a>
-                    <a
-                      href={settings?.social_links?.twitter || 'https://twitter.com/clearcodedev'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-lg bg-surface-cardHover border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
-                      aria-label="Twitter / X"
-                    >
-                      <Twitter className="w-4 h-4" />
-                    </a>
+                    {settings?.social_links?.twitter ? (
+                      <a
+                        href={settings.social_links.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-lg bg-surface-cardHover border border-surface-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-blue transition-colors"
+                        aria-label="Twitter / X"
+                      >
+                        <Twitter className="w-4 h-4" />
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </Card>

@@ -136,7 +136,7 @@ export const Enquiry: React.FC = () => {
                   </Button>
                 </Link>
                 <a
-                  href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                  href={`https://wa.me/918110853519?text=${encodeURIComponent(
                     `Hello ClearCode.dev! I just submitted an enquiry (Ref: ${submittedId}). Would love to discuss it further.`
                   )}`}
                   target="_blank"

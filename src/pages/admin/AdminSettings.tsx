@@ -170,7 +170,7 @@ export const AdminSettings: React.FC = () => {
                 type="text"
                 value={settings.whatsapp_number}
                 onChange={(e) => setSettings({ ...settings, whatsapp_number: e.target.value })}
-                placeholder="919876543210"
+                placeholder="+918110853519"
                 className="w-full px-3.5 py-2 rounded-lg bg-surface-cardHover border border-surface-border text-white text-xs border-glow-focus transition-all font-mono"
               />
             </div>
