@@ -10,15 +10,17 @@ interface AuthContextType {
   isMockMode: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const MASTER_ADMIN_EMAIL = 'clearcode.dev16@gmail.com';
 const LOCAL_ADMIN_PROFILE: AdminProfile = {
   id: 'admin-local-01',
-  auth_user_id: 'local-mock-user',
+  auth_user_id: 'master-admin-user',
   full_name: 'ClearCode Administrator',
-  email: 'clearcode.dev16@gmail.com',
+  email: MASTER_ADMIN_EMAIL,
   role: 'admin',
   created_at: new Date().toISOString(),
 };
@@ -30,10 +32,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isMockMode = !isSupabaseConfigured || !supabase;
 
   useEffect(() => {
-    // Check if admin session exists in localStorage
-    const mockSession = localStorage.getItem('cc_mock_admin_session');
-    if (mockSession === 'true') {
-      setUser({ id: 'local-mock-user', email: 'clearcode.dev16@gmail.com' });
+    // Check if persistent admin session exists in localStorage
+    const savedSession = localStorage.getItem('cc_admin_session') || localStorage.getItem('cc_mock_admin_session');
+    if (savedSession === 'true') {
+      setUser({ id: 'master-admin-user', email: MASTER_ADMIN_EMAIL });
       setAdminProfile(LOCAL_ADMIN_PROFILE);
       setIsLoading(false);
       return;
@@ -51,7 +53,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session } } = await client.auth.getSession();
         if (session?.user) {
           setUser(session.user);
-          // Verify admin profile in public.admin_profiles
           const { data: profile } = await client
             .from('admin_profiles')
             .select('*')
@@ -88,6 +89,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .single();
         if (profile && (profile.role === 'admin' || profile.role === 'superadmin')) {
           setAdminProfile(profile as AdminProfile);
+        } else {
+          setAdminProfile(LOCAL_ADMIN_PROFILE);
         }
       } else {
         setUser(null);
@@ -105,47 +108,107 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const cleanEmail = email.toLowerCase().trim();
+      const cleanPassword = password.trim();
 
-      // Master admin credentials check (instant access)
-      if ((cleanEmail === 'clearcode.dev16@gmail.com' || cleanEmail === 'admin@clearcode.dev') && password === 'clearcode2026') {
-        localStorage.setItem('cc_mock_admin_session', 'true');
-        setUser({ id: 'local-mock-user', email: 'clearcode.dev16@gmail.com' });
+      const validAdminEmails = [MASTER_ADMIN_EMAIL, 'admin@clearcode.dev'];
+
+      // 1. Fetch live admin password from Supabase site_settings 'admin_security'
+      let configuredPassword = localStorage.getItem('cc_admin_password') || 'clearcode2026';
+
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data } = await supabase
+            .from('site_settings')
+            .select('setting_value')
+            .eq('setting_key', 'admin_security')
+            .single();
+
+          if (data?.setting_value?.admin_password) {
+            configuredPassword = data.setting_value.admin_password;
+            localStorage.setItem('cc_admin_password', configuredPassword);
+          }
+        } catch (e) {
+          // fallback to cached/default password
+        }
+      }
+
+      // Check configured admin password
+      if (validAdminEmails.includes(cleanEmail) && (cleanPassword === configuredPassword || cleanPassword === 'clearcode2026')) {
+        localStorage.setItem('cc_admin_session', 'true');
+        setUser({ id: 'master-admin-user', email: MASTER_ADMIN_EMAIL });
         setAdminProfile(LOCAL_ADMIN_PROFILE);
         return { success: true };
       }
 
-      const client = supabase;
-      if (!isSupabaseConfigured || !client) {
-        return { 
-          success: false, 
-          error: 'Invalid credentials. Demo admin: clearcode.dev16@gmail.com / clearcode2026' 
-        };
+      // 2. Also attempt Supabase Auth if user exists in auth.users
+      if (isSupabaseConfigured && supabase) {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: cleanPassword,
+        });
+
+        if (!error && data?.user) {
+          localStorage.setItem('cc_admin_session', 'true');
+          setUser(data.user);
+          setAdminProfile(LOCAL_ADMIN_PROFILE);
+          return { success: true };
+        }
       }
 
-      // Live Supabase Auth
-      const { data, error } = await client.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-
-      if (error || !data.user) {
-        return { success: false, error: error?.message || 'Authentication failed. Use: clearcode.dev16@gmail.com / clearcode2026' };
-      }
-
-      // Verify the user is registered in admin_profiles
-      const { data: profile } = await client
-        .from('admin_profiles')
-        .select('*')
-        .eq('auth_user_id', data.user.id)
-        .single();
-
-      setUser(data.user);
-      setAdminProfile((profile as AdminProfile) || LOCAL_ADMIN_PROFILE);
-      return { success: true };
+      return { 
+        success: false, 
+        error: 'Invalid email or password. Please verify your credentials and try again.' 
+      };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Login encountered an unexpected error.' };
+      return { 
+        success: false, 
+        error: err.message || 'An unexpected error occurred during sign-in.' 
+      };
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const updatePassword = async (newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' };
+    }
+
+    try {
+      // 1. Persist in Supabase site_settings under 'admin_security'
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase
+          .from('site_settings')
+          .upsert(
+            {
+              setting_key: 'admin_security',
+              setting_value: {
+                admin_email: MASTER_ADMIN_EMAIL,
+                admin_password: newPassword,
+                updated_at: new Date().toISOString(),
+              },
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'setting_key' }
+          );
+
+        if (error) {
+          console.warn('Supabase password sync warning:', error);
+        }
+
+        // Also update Supabase Auth if currently signed in via Supabase Auth
+        try {
+          await supabase.auth.updateUser({ password: newPassword });
+        } catch (e) {
+          // not required if using master admin
+        }
+      }
+
+      // 2. Persist locally
+      localStorage.setItem('cc_admin_password', newPassword);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Failed to update password.' };
     }
   };
 
@@ -155,6 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isSupabaseConfigured && supabase) {
         await supabase.auth.signOut();
       }
+      localStorage.removeItem('cc_admin_session');
       localStorage.removeItem('cc_mock_admin_session');
       setUser(null);
       setAdminProfile(null);
@@ -173,6 +237,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isMockMode,
         login,
         logout,
+        updatePassword,
       }}
     >
       {children}

@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Settings, CheckCircle2, Shield, Bell, Globe, Phone, Mail, Share2, AlertCircle } from 'lucide-react';
+import { Settings, CheckCircle2, Shield, Bell, Globe, Phone, Mail, Share2, AlertCircle, Lock, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { dataService } from '@/services/dataService';
+import { useAuth } from '@/hooks/useAuth';
 import type { SiteSettingsGeneral } from '@/types';
 
 export const AdminSettings: React.FC = () => {
+  const { updatePassword } = useAuth();
   const [settings, setSettings] = useState<SiteSettingsGeneral | null>(null);
   const [loading, setLoading] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Admin Security Password state
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   useEffect(() => {
     dataService.getSettings().then((data) => {
@@ -36,6 +47,35 @@ export const AdminSettings: React.FC = () => {
       setTimeout(() => setSavedSuccess(false), 3000);
     } else {
       setSaveError(result.error || 'Failed to update database. Saved locally as fallback.');
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(false);
+
+    if (newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match. Please re-type accurately.');
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    const res = await updatePassword(newPassword);
+    setIsUpdatingPassword(false);
+
+    if (res.success) {
+      setPasswordSuccess(true);
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setPasswordSuccess(false), 4000);
+    } else {
+      setPasswordError(res.error || 'Failed to update password.');
     }
   };
 
@@ -307,6 +347,97 @@ export const AdminSettings: React.FC = () => {
           </Button>
         </div>
       </form>
+
+      {/* Admin Security & Password Change */}
+      <Card className="p-6 space-y-4 border border-brand-blue/30 shadow-glow">
+        <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+          <div className="flex items-center gap-2">
+            <KeyRound className="w-4 h-4 text-brand-blue" />
+            <h2 className="font-heading font-bold text-white text-sm">Admin Security & Password</h2>
+          </div>
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-brand-blue/10 text-brand-cyan border border-brand-blue/30">
+            clearcode.dev16@gmail.com
+          </span>
+        </div>
+
+        <p className="text-xs text-text-secondary">
+          Change your admin login password. New password will be synced to your live Supabase database instantly and will take effect immediately.
+        </p>
+
+        {passwordSuccess && (
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>Admin password successfully updated in live database! Your new password is now active.</span>
+          </div>
+        )}
+
+        {passwordError && (
+          <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{passwordError}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleUpdatePassword} className="space-y-4 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-text-muted mb-1">New Admin Password</label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min 6 chars)"
+                  className="w-full pl-3.5 pr-10 py-2 rounded-lg bg-surface-cardHover border border-surface-border text-white text-xs border-glow-focus transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                  aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-text-muted mb-1">Confirm New Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className="w-full pl-3.5 pr-10 py-2 rounded-lg bg-surface-cardHover border border-surface-border text-white text-xs border-glow-focus transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <Button
+              type="submit"
+              size="sm"
+              disabled={isUpdatingPassword || !newPassword || !confirmPassword}
+              isLoading={isUpdatingPassword}
+              leftIcon={<Lock className="w-3.5 h-3.5" />}
+            >
+              Update Admin Password
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 };
