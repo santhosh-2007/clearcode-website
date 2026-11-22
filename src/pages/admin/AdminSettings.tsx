@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Settings, CheckCircle2, Shield, Bell, Globe, Phone, Mail, Share2 } from 'lucide-react';
+import { Settings, CheckCircle2, Shield, Bell, Globe, Phone, Mail, Share2, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -10,6 +10,8 @@ export const AdminSettings: React.FC = () => {
   const [settings, setSettings] = useState<SiteSettingsGeneral | null>(null);
   const [loading, setLoading] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     dataService.getSettings().then((data) => {
@@ -22,9 +24,19 @@ export const AdminSettings: React.FC = () => {
     e.preventDefault();
     if (!settings) return;
 
-    await dataService.saveSettings(settings);
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setIsSaving(true);
+    setSaveError(null);
+    setSavedSuccess(false);
+
+    const result = await dataService.saveSettings(settings);
+    setIsSaving(false);
+
+    if (result.success) {
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } else {
+      setSaveError(result.error || 'Failed to update database. Saved locally as fallback.');
+    }
   };
 
   if (loading || !settings) {
@@ -43,7 +55,14 @@ export const AdminSettings: React.FC = () => {
       {savedSuccess && (
         <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>Site settings saved and applied across the website!</span>
+          <span>Site settings saved and applied across the website and database!</span>
+        </div>
+      )}
+
+      {saveError && (
+        <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>Failed to update live Supabase database ({saveError}). Changes were stored locally. Run the RLS SQL update in Supabase to enable direct writes.</span>
         </div>
       )}
 
@@ -283,8 +302,8 @@ export const AdminSettings: React.FC = () => {
         </Card>
 
         <div className="flex justify-end pt-2">
-          <Button type="submit" size="md">
-            Save All Settings
+          <Button type="submit" size="md" disabled={isSaving}>
+            {isSaving ? 'Saving Changes...' : 'Save All Settings'}
           </Button>
         </div>
       </form>

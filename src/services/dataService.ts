@@ -629,7 +629,7 @@ export const dataService = {
     return getStored<SiteSettingsGeneral>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
   },
 
-  async saveSettings(settings: SiteSettingsGeneral): Promise<boolean> {
+  async saveSettings(settings: SiteSettingsGeneral): Promise<{ success: boolean; error?: string }> {
     if (isSupabaseConfigured && supabase) {
       const { error } = await supabase
         .from('site_settings')
@@ -643,11 +643,15 @@ export const dataService = {
         );
       if (error) {
         console.error('Supabase saveSettings error:', error);
+        // If Supabase RLS or network failed, still update local fallback but inform caller
+        setStored(STORAGE_KEYS.SETTINGS, settings);
+        return { success: false, error: error.message };
       }
-      if (!error) return true;
+      setStored(STORAGE_KEYS.SETTINGS, settings);
+      return { success: true };
     }
     setStored(STORAGE_KEYS.SETTINGS, settings);
-    return true;
+    return { success: true };
   },
 
   // Content Pages
