@@ -12,7 +12,9 @@ export const Footer: React.FC = () => {
   }, []);
 
   const phone = settings?.whatsapp_number?.replace(/\D/g, '') || '919876543210';
-  const email = settings?.contact_email || 'contact@clearcode.dev';
+  const email = settings?.contact_email || 'clearcode.dev16@gmail.com';
+  const footerDescription = settings?.footer_description || 'Modern Web Development Studio. We engineer lightning-fast, high-converting websites and scalable web applications for startups, businesses, and ambitious creators.';
+  const footerCopyright = settings?.footer_copyright || 'ClearCode.dev. Code It. Build It. Launch It. All rights reserved.';
 
   return (
     <footer className="bg-background-secondary border-t border-surface-border relative overflow-hidden">
@@ -32,7 +34,7 @@ export const Footer: React.FC = () => {
               </span>
             </Link>
             <p className="text-sm text-text-secondary max-w-sm leading-relaxed">
-              Modern Web Development Studio. We engineer lightning-fast, high-converting websites and scalable web applications for startups, businesses, and ambitious creators.
+              {footerDescription}
             </p>
             <div className="pt-2 flex items-center gap-3">
               <a
@@ -166,7 +168,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-8 mt-8 border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
           <div>
-            &copy; {new Date().getFullYear()} ClearCode.dev. Code It. Build It. Launch It. All rights reserved.
+            &copy; {new Date().getFullYear()} {footerCopyright}
           </div>
           <div className="flex items-center gap-6">
             <Link to="/privacy-policy" className="hover:text-text-secondary transition-colors">

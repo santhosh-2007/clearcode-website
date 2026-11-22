@@ -221,6 +221,8 @@ const DEFAULT_SETTINGS: SiteSettingsGeneral = {
   contact_email: 'clearcode.dev16@gmail.com',
   whatsapp_number: '919876543210',
   location: 'Global Remote Studio',
+  footer_description: 'Modern Web Development Studio. We engineer lightning-fast, high-converting websites and scalable web applications for startups, businesses, and ambitious creators.',
+  footer_copyright: 'ClearCode.dev. Code It. Build It. Launch It. All rights reserved.',
   announcement_banner: {
     enabled: true,
     text: '🚀 Now taking new client projects for Q1/Q2. Free initial consultation included!'
@@ -631,11 +633,17 @@ export const dataService = {
     if (isSupabaseConfigured && supabase) {
       const { error } = await supabase
         .from('site_settings')
-        .upsert({
-          setting_key: 'general',
-          setting_value: settings,
-          updated_at: new Date().toISOString(),
-        });
+        .upsert(
+          {
+            setting_key: 'general',
+            setting_value: settings,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'setting_key' }
+        );
+      if (error) {
+        console.error('Supabase saveSettings error:', error);
+      }
       if (!error) return true;
     }
     setStored(STORAGE_KEYS.SETTINGS, settings);
@@ -662,12 +670,18 @@ export const dataService = {
     if (isSupabaseConfigured && supabase) {
       const { error } = await supabase
         .from('content_pages')
-        .upsert({
-          page_slug: slug,
-          title,
-          content,
-          updated_at: new Date().toISOString(),
-        });
+        .upsert(
+          {
+            page_slug: slug,
+            title,
+            content,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'page_slug' }
+        );
+      if (error) {
+        console.error('Supabase saveContentPage error:', error);
+      }
       if (!error) return true;
     }
     if (slug === 'about') {

@@ -100,6 +100,8 @@ export interface SiteSettingsGeneral {
   contact_email: string;
   whatsapp_number: string;
   location: string;
+  footer_description?: string;
+  footer_copyright?: string;
   announcement_banner: {
     enabled: boolean;
     text: string;

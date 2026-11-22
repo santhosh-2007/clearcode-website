@@ -97,6 +97,36 @@ export const AdminSettings: React.FC = () => {
           </div>
         </Card>
 
+        {/* Footer Content & Copyright */}
+        <Card className="p-6 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-surface-border">
+            <Globe className="w-4 h-4 text-brand-cyan" />
+            <h2 className="font-heading font-bold text-white text-sm">Footer Content & Copyright</h2>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-muted mb-1">Footer Brand Description</label>
+            <textarea
+              rows={3}
+              value={settings.footer_description || ''}
+              onChange={(e) => setSettings({ ...settings, footer_description: e.target.value })}
+              placeholder="Modern Web Development Studio. We engineer lightning-fast..."
+              className="w-full px-3.5 py-2 rounded-lg bg-surface-cardHover border border-surface-border text-white text-xs border-glow-focus transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-muted mb-1">Footer Copyright Notice</label>
+            <input
+              type="text"
+              value={settings.footer_copyright || ''}
+              onChange={(e) => setSettings({ ...settings, footer_copyright: e.target.value })}
+              placeholder="ClearCode.dev. Code It. Build It. Launch It. All rights reserved."
+              className="w-full px-3.5 py-2 rounded-lg bg-surface-cardHover border border-surface-border text-white text-xs border-glow-focus transition-all"
+            />
+          </div>
+        </Card>
+
         {/* Contact & WhatsApp */}
         <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-surface-border">

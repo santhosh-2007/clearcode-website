@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FileEdit, Plus, Trash2, Edit2, CheckCircle2, HelpCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileEdit, Plus, Trash2, Edit2, CheckCircle2, ShieldCheck, FileText, Settings, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { Modal } from '@/components/common/Modal';
@@ -8,8 +9,10 @@ import { dataService } from '@/services/dataService';
 import type { FAQ } from '@/types';
 
 export const AdminContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'about' | 'faqs'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'privacy' | 'terms' | 'faqs'>('about');
   const [aboutData, setAboutData] = useState<any>(null);
+  const [privacyData, setPrivacyData] = useState<any>(null);
+  const [termsData, setTermsData] = useState<any>(null);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -21,11 +24,15 @@ export const AdminContent: React.FC = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const [about, faqList] = await Promise.all([
+    const [about, privacy, terms, faqList] = await Promise.all([
       dataService.getContentPage('about'),
+      dataService.getContentPage('privacy-policy'),
+      dataService.getContentPage('terms-and-conditions'),
       dataService.getFAQs(),
     ]);
     setAboutData(about || {});
+    setPrivacyData(privacy || { sections: [] });
+    setTermsData(terms || { sections: [] });
     setFaqs(faqList);
     setLoading(false);
   };
@@ -37,6 +44,20 @@ export const AdminContent: React.FC = () => {
   const handleSaveAbout = async (e: React.FormEvent) => {
     e.preventDefault();
     await dataService.saveContentPage('about', 'About ClearCode.dev', aboutData);
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleSavePrivacy = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await dataService.saveContentPage('privacy-policy', 'Privacy Policy', privacyData);
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleSaveTerms = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await dataService.saveContentPage('terms-and-conditions', 'Terms & Conditions', termsData);
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };
@@ -79,15 +100,15 @@ export const AdminContent: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-white">Content & FAQ Management</h1>
+          <h1 className="text-2xl font-heading font-bold text-white">Content & Pages Management</h1>
           <p className="text-xs text-text-secondary mt-1">
-            Edit brand story, mission, vision, founder details, and manage public FAQs.
+            Edit brand story, mission, founder details, legal pages, and manage public FAQs.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('about')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'about'
                 ? 'bg-brand-blue text-white shadow-glow'
                 : 'bg-surface text-text-secondary hover:text-white border border-surface-border'
@@ -96,8 +117,28 @@ export const AdminContent: React.FC = () => {
             About & Story
           </button>
           <button
+            onClick={() => setActiveTab('privacy')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'privacy'
+                ? 'bg-brand-blue text-white shadow-glow'
+                : 'bg-surface text-text-secondary hover:text-white border border-surface-border'
+            }`}
+          >
+            Privacy Policy
+          </button>
+          <button
+            onClick={() => setActiveTab('terms')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'terms'
+                ? 'bg-brand-blue text-white shadow-glow'
+                : 'bg-surface text-text-secondary hover:text-white border border-surface-border'
+            }`}
+          >
+            Terms & Conditions
+          </button>
+          <button
             onClick={() => setActiveTab('faqs')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'faqs'
                 ? 'bg-brand-blue text-white shadow-glow'
                 : 'bg-surface text-text-secondary hover:text-white border border-surface-border'
@@ -108,10 +149,23 @@ export const AdminContent: React.FC = () => {
         </div>
       </div>
 
+      {/* Quick link banner to Footer Settings */}
+      <div className="p-4 rounded-xl bg-surface/70 border border-brand-blue/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2.5 text-text-secondary">
+          <Settings className="w-4 h-4 text-brand-cyan shrink-0" />
+          <span>
+            Looking to edit the <strong className="text-white">Footer description, copyright notice, email, or WhatsApp number</strong>?
+          </span>
+        </div>
+        <Link to="/admin/settings" className="inline-flex items-center gap-1 text-brand-cyan font-semibold hover:underline shrink-0">
+          Open Settings Page <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
       {savedSuccess && (
         <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>Website content updated successfully!</span>
+          <span>Website content updated and saved successfully!</span>
         </div>
       )}
 
@@ -221,7 +275,169 @@ export const AdminContent: React.FC = () => {
 
             <div className="pt-4 flex justify-end">
               <Button type="submit" size="md">
-                Save Content Updates
+                Save About Page
+              </Button>
+            </div>
+          </form>
+        </Card>
+      )}
+
+      {/* Privacy Policy Tab */}
+      {activeTab === 'privacy' && (
+        <Card className="p-6 sm:p-8">
+          <form onSubmit={handleSavePrivacy} className="space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-brand-cyan" />
+                <h3 className="font-heading font-bold text-white text-sm">Privacy Policy Sections</h3>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  const currentSecs = privacyData?.sections || [];
+                  setPrivacyData({
+                    ...privacyData,
+                    sections: [...currentSecs, { title: 'New Section', content: '' }],
+                  });
+                }}
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
+              >
+                Add Section
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {(privacyData?.sections || []).map((sec: any, idx: number) => (
+                <div key={idx} className="p-4 rounded-xl bg-surface-cardHover border border-surface-border space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-brand-cyan">Section #{idx + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = (privacyData?.sections || []).filter((_: any, i: number) => i !== idx);
+                        setPrivacyData({ ...privacyData, sections: updated });
+                      }}
+                      className="text-xs text-rose-400 hover:text-rose-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-text-muted mb-1">Section Title</label>
+                    <input
+                      type="text"
+                      value={sec.title || ''}
+                      onChange={(e) => {
+                        const updated = [...privacyData.sections];
+                        updated[idx].title = e.target.value;
+                        setPrivacyData({ ...privacyData, sections: updated });
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-text-muted mb-1">Section Body Content</label>
+                    <textarea
+                      rows={3}
+                      value={sec.content || ''}
+                      onChange={(e) => {
+                        const updated = [...privacyData.sections];
+                        updated[idx].content = e.target.value;
+                        setPrivacyData({ ...privacyData, sections: updated });
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-white text-xs"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 flex justify-end">
+              <Button type="submit" size="md">
+                Save Privacy Policy
+              </Button>
+            </div>
+          </form>
+        </Card>
+      )}
+
+      {/* Terms & Conditions Tab */}
+      {activeTab === 'terms' && (
+        <Card className="p-6 sm:p-8">
+          <form onSubmit={handleSaveTerms} className="space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-brand-cyan" />
+                <h3 className="font-heading font-bold text-white text-sm">Terms & Conditions Sections</h3>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  const currentSecs = termsData?.sections || [];
+                  setTermsData({
+                    ...termsData,
+                    sections: [...currentSecs, { title: 'New Term', content: '' }],
+                  });
+                }}
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
+              >
+                Add Term
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {(termsData?.sections || []).map((sec: any, idx: number) => (
+                <div key={idx} className="p-4 rounded-xl bg-surface-cardHover border border-surface-border space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-brand-cyan">Term #{idx + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = (termsData?.sections || []).filter((_: any, i: number) => i !== idx);
+                        setTermsData({ ...termsData, sections: updated });
+                      }}
+                      className="text-xs text-rose-400 hover:text-rose-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-text-muted mb-1">Term Title</label>
+                    <input
+                      type="text"
+                      value={sec.title || ''}
+                      onChange={(e) => {
+                        const updated = [...termsData.sections];
+                        updated[idx].title = e.target.value;
+                        setTermsData({ ...termsData, sections: updated });
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-text-muted mb-1">Term Details</label>
+                    <textarea
+                      rows={3}
+                      value={sec.content || ''}
+                      onChange={(e) => {
+                        const updated = [...termsData.sections];
+                        updated[idx].content = e.target.value;
+                        setTermsData({ ...termsData, sections: updated });
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-white text-xs"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 flex justify-end">
+              <Button type="submit" size="md">
+                Save Terms & Conditions
               </Button>
             </div>
           </form>
