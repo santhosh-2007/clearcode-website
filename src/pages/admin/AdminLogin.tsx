@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { ShieldCheck, Lock, Mail, ArrowRight, Code2, AlertCircle, Info } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Code2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/Button';
 import { Card } from '@/components/common/Card';
 import { SEOHead } from '@/components/common/SEOHead';
 
 export const AdminLogin: React.FC = () => {
-  const { login, isLoading, isMockMode } = useAuth();
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const from = (location.state as any)?.from?.pathname || '/admin/dashboard';
@@ -27,11 +28,6 @@ export const AdminLogin: React.FC = () => {
     } else {
       setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
     }
-  };
-
-  const handleUseDemoCreds = () => {
-    setEmail('clearcode.dev16@gmail.com');
-    setPassword('clearcode2026');
   };
 
   return (
@@ -61,28 +57,9 @@ export const AdminLogin: React.FC = () => {
           </div>
 
           {errorMessage && (
-            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-400 text-xs">
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-400 text-xs animate-in fade-in">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
-            </div>
-          )}
-
-          {isMockMode && (
-            <div className="p-4 rounded-xl bg-brand-blue/10 border border-brand-blue/30 text-xs text-brand-cyan space-y-2">
-              <div className="flex items-center gap-2 font-semibold">
-                <Info className="w-4 h-4 shrink-0" />
-                <span>Demo Evaluation Mode</span>
-              </div>
-              <p className="text-text-secondary text-[11px] leading-relaxed">
-                Supabase keys not yet connected. Click below to prefill evaluation credentials and test the entire admin dashboard with live state!
-              </p>
-              <button
-                type="button"
-                onClick={handleUseDemoCreds}
-                className="text-xs font-semibold underline text-white hover:text-brand-cyan cursor-pointer"
-              >
-                Auto-fill Demo Admin (clearcode.dev16@gmail.com / clearcode2026)
-              </button>
             </div>
           )}
 
@@ -99,7 +76,7 @@ export const AdminLogin: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@clearcode.dev"
+                    placeholder="clearcode.dev16@gmail.com"
                     className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-surface-cardHover border border-surface-border text-white placeholder-text-muted text-sm border-glow-focus transition-all"
                   />
                 </div>
@@ -112,13 +89,21 @@ export const AdminLogin: React.FC = () => {
                 <div className="relative">
                   <Lock className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-surface-cardHover border border-surface-border text-white placeholder-text-muted text-sm border-glow-focus transition-all"
+                    placeholder="Enter your password"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-surface-cardHover border border-surface-border text-white placeholder-text-muted text-sm border-glow-focus transition-all"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
