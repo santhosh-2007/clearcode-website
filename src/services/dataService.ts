@@ -303,21 +303,26 @@ export const dataService = {
   },
 
   async saveService(service: Partial<Service>): Promise<Service> {
+    const payload = { ...service };
+    if (!payload.id) delete payload.id;
+
     if (isSupabaseConfigured && supabase) {
       if (service.id) {
         const { data, error } = await supabase
           .from('services')
-          .update(service)
+          .update(payload)
           .eq('id', service.id)
           .select()
           .single();
+        if (error) console.error('Supabase update service error:', error);
         if (!error && data) return data as Service;
       } else {
         const { data, error } = await supabase
           .from('services')
-          .insert([service])
+          .insert([payload])
           .select()
           .single();
+        if (error) console.error('Supabase insert service error:', error);
         if (!error && data) return data as Service;
       }
     }
@@ -363,21 +368,26 @@ export const dataService = {
   },
 
   async saveProject(project: Partial<Project>): Promise<Project> {
+    const payload = { ...project };
+    if (!payload.id) delete payload.id;
+
     if (isSupabaseConfigured && supabase) {
       if (project.id) {
         const { data, error } = await supabase
           .from('projects')
-          .update(project)
+          .update(payload)
           .eq('id', project.id)
           .select()
           .single();
+        if (error) console.error('Supabase update project error:', error);
         if (!error && data) return data as Project;
       } else {
         const { data, error } = await supabase
           .from('projects')
-          .insert([project])
+          .insert([payload])
           .select()
           .single();
+        if (error) console.error('Supabase insert project error:', error);
         if (!error && data) return data as Project;
       }
     }
@@ -509,21 +519,26 @@ export const dataService = {
   },
 
   async saveFAQ(faq: Partial<FAQ>): Promise<FAQ> {
+    const payload = { ...faq };
+    if (!payload.id) delete payload.id;
+
     if (isSupabaseConfigured && supabase) {
       if (faq.id) {
         const { data, error } = await supabase
           .from('faqs')
-          .update(faq)
+          .update(payload)
           .eq('id', faq.id)
           .select()
           .single();
+        if (error) console.error('Supabase update FAQ error:', error);
         if (!error && data) return data as FAQ;
       } else {
         const { data, error } = await supabase
           .from('faqs')
-          .insert([faq])
+          .insert([payload])
           .select()
           .single();
+        if (error) console.error('Supabase insert FAQ error:', error);
         if (!error && data) return data as FAQ;
       }
     }
@@ -537,7 +552,7 @@ export const dataService = {
     } else {
       updated = {
         ...faq,
-        id: 'faq-' + Date.now(),
+        id: crypto.randomUUID ? crypto.randomUUID() : 'faq-' + Date.now(),
         display_order: current.length + 1,
       } as FAQ;
       current.push(updated);
@@ -549,6 +564,7 @@ export const dataService = {
   async deleteFAQ(id: string): Promise<boolean> {
     if (isSupabaseConfigured && supabase) {
       const { error } = await supabase.from('faqs').delete().eq('id', id);
+      if (error) console.error('Supabase delete FAQ error:', error);
       if (!error) return true;
     }
     const current = getStored<FAQ[]>(STORAGE_KEYS.FAQS, DEFAULT_FAQS);
@@ -569,21 +585,26 @@ export const dataService = {
   },
 
   async saveTestimonial(testimonial: Partial<Testimonial>): Promise<Testimonial> {
+    const payload = { ...testimonial };
+    if (!payload.id) delete payload.id;
+
     if (isSupabaseConfigured && supabase) {
       if (testimonial.id) {
         const { data, error } = await supabase
           .from('testimonials')
-          .update(testimonial)
+          .update(payload)
           .eq('id', testimonial.id)
           .select()
           .single();
+        if (error) console.error('Supabase update testimonial error:', error);
         if (!error && data) return data as Testimonial;
       } else {
         const { data, error } = await supabase
           .from('testimonials')
-          .insert([testimonial])
+          .insert([payload])
           .select()
           .single();
+        if (error) console.error('Supabase insert testimonial error:', error);
         if (!error && data) return data as Testimonial;
       }
     }
